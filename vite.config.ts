@@ -34,7 +34,13 @@ export default defineConfig({
               let body = ''
               req.on('data', (chunk: Buffer) => { body += chunk.toString() })
               req.on('end', () => {
-                writeFileSync(filePath, body, 'utf-8')
+                let output = body
+                try {
+                  output = JSON.stringify(JSON.parse(body), null, 2) + '\n'
+                } catch {
+                  // Body não é JSON válido — grava como veio para preservar o erro do cliente.
+                }
+                writeFileSync(filePath, output, 'utf-8')
                 res.end('{"ok":true}')
               })
             } else {
