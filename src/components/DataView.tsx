@@ -7,6 +7,7 @@ import { usePagination } from '../hooks/usePagination';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useNotification } from '../context/NotificationContext';
 import { extractFilterOptions } from '../utils/filtering';
+import { sortPaymentsNewestFirst } from '../utils/paymentMetrics';
 import { useColumnVisibility } from '../hooks/useColumnVisibility';
 import { SearchBar } from './SearchBar';
 import { FilterPanel } from './FilterPanel';
@@ -94,22 +95,50 @@ export function DataView() {
    */
   const handlePaymentsFetched = useCallback(
     (code: number | string, payments: PaymentEvent[], fetchedAt: string) => {
+      const sortedPayments = sortPaymentsNewestFirst(payments);
       updateAsset(code, {
-        paymentSchedule: payments.length > 0 ? payments : undefined,
-        paymentScheduleUpdatedAt: payments.length > 0 ? fetchedAt : undefined,
+        paymentSchedule: sortedPayments.length > 0 ? sortedPayments : undefined,
+        paymentScheduleUpdatedAt: sortedPayments.length > 0 ? fetchedAt : undefined,
       });
       setEditingAsset((current) =>
         current && current.code === code
           ? {
               ...current,
-              paymentSchedule: payments.length > 0 ? payments : undefined,
-              paymentScheduleUpdatedAt: payments.length > 0 ? fetchedAt : undefined,
+              paymentSchedule: sortedPayments.length > 0 ? sortedPayments : undefined,
+              paymentScheduleUpdatedAt: sortedPayments.length > 0 ? fetchedAt : undefined,
             }
           : current,
       );
       addNotification(
         'success',
-        `Histórico salvo: ${payments.length} pagamento(s) persistido(s) localmente.`,
+        `Histórico salvo: ${sortedPayments.length} pagamento(s) persistido(s) localmente.`,
+      );
+    },
+    [updateAsset, addNotification],
+  );
+
+  /**
+   * Persiste imediatamente uma alteração na lista de URLs de agentes
+   * fiduciários (Enter, remoção ou seleção de chip). Mesmo padrão de
+   * `handlePaymentsFetched`: atualiza apenas o campo correspondente,
+   * preservando demais edições em curso.
+   */
+  const handleUrlsCommitted = useCallback(
+    (code: number | string, urls: string[]) => {
+      const cleaned = urls.map((u) => u.trim()).filter((u) => u.length > 0);
+      updateAsset(code, {
+        fiduciaryAgentUrls: cleaned.length > 0 ? cleaned : undefined,
+      });
+      setEditingAsset((current) =>
+        current && current.code === code
+          ? { ...current, fiduciaryAgentUrls: cleaned.length > 0 ? cleaned : undefined }
+          : current,
+      );
+      addNotification(
+        'success',
+        cleaned.length > 0
+          ? `Agentes fiduciários salvos (${cleaned.length} URL${cleaned.length > 1 ? 's' : ''}).`
+          : 'Lista de agentes fiduciários limpa.',
       );
     },
     [updateAsset, addNotification],
@@ -201,6 +230,7 @@ export function DataView() {
         onSave={handleModalSave}
         onClose={handleModalClose}
         onPaymentsFetched={handlePaymentsFetched}
+        onUrlsCommitted={handleUrlsCommitted}
         isMobile={isMobile}
       />
       <JsonViewModal

@@ -112,13 +112,13 @@ describe('mergeAssets — quantityAvailable update', () => {
 });
 
 describe('mergeAssets — manual field preservation', () => {
-  it('preserves b3Code, fiduciaryAgentUrl and other user-edited fields', () => {
+  it('preserves b3Code, fiduciaryAgentUrls and other user-edited fields', () => {
     const existing: Asset[] = [
       makeAsset({
         code: 1,
         quantityAvailable: 541,
         b3Code: 'B3-XYZ',
-        fiduciaryAgentUrl: 'https://example.com/agent',
+        fiduciaryAgentUrls: ['https://example.com/agent', 'https://other.com/x'],
         notes: 'comprado em jan/2026',
         favorite: true,
         tags: ['imobiliário', 'high-yield'],
@@ -130,7 +130,7 @@ describe('mergeAssets — manual field preservation', () => {
 
     expect(result.assets[0].quantityAvailable).toBe(300);
     expect(result.assets[0].b3Code).toBe('B3-XYZ');
-    expect(result.assets[0].fiduciaryAgentUrl).toBe('https://example.com/agent');
+    expect(result.assets[0].fiduciaryAgentUrls).toEqual(['https://example.com/agent', 'https://other.com/x']);
     expect(result.assets[0].notes).toBe('comprado em jan/2026');
     expect(result.assets[0].favorite).toBe(true);
     expect(result.assets[0].tags).toEqual(['imobiliário', 'high-yield']);
@@ -244,7 +244,7 @@ describe('getChangedFields', () => {
     expect(changes.fee).toBeUndefined();
   });
 
-  it('ignores manual fields (b3Code, notes, fiduciaryAgentUrl, ...)', () => {
+  it('ignores manual fields (b3Code, notes, fiduciaryAgentUrls, ...)', () => {
     const oldAsset = makeAsset({ code: 1, b3Code: 'B3-OLD', notes: 'old note' });
     const newAsset = makeAsset({ code: 1, b3Code: 'B3-NEW', notes: 'new note' });
 

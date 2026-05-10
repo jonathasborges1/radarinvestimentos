@@ -1,5 +1,8 @@
 import type { PaymentScheduleProvider } from '../types';
 import { ecoagroPaymentScheduleProvider } from './ecoagroPaymentScheduleProvider';
+import { oliveiraTrustPaymentScheduleProvider } from './oliveiraTrustPaymentScheduleProvider';
+import { pentagonoPaymentScheduleProvider } from './pentagonoPaymentScheduleProvider';
+import { vortxPaymentScheduleProvider } from './vortxPaymentScheduleProvider';
 
 /**
  * Lista de provedores ativos. Para adicionar um novo agente fiduciário:
@@ -11,4 +14,7 @@ import { ecoagroPaymentScheduleProvider } from './ecoagroPaymentScheduleProvider
  */
 export const paymentScheduleProviders: PaymentScheduleProvider[] = [
   ecoagroPaymentScheduleProvider,
+  vortxPaymentScheduleProvider,
+  oliveiraTrustPaymentScheduleProvider,
+  pentagonoPaymentScheduleProvider,
 ];

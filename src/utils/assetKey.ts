@@ -11,7 +11,7 @@ import type {
  */
 export const MANUAL_FIELDS = [
   'b3Code',
-  'fiduciaryAgentUrl',
+  'fiduciaryAgentUrls',
   'notes',
   'favorite',
   'tags',

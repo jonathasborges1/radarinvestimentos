@@ -7,6 +7,7 @@ export const ALL_COLUMNS: ColumnDef[] = [
   { key: 'fee',                         label: 'Taxa',                   group: 'original', defaultVisible: true,                 sortable: 'fee' },
   { key: 'maturityDate',                label: 'Vencimento',             group: 'original', defaultVisible: true,                 sortable: 'maturityDate' },
   { key: 'puMinValue',                  label: 'PU Mínimo',              group: 'original', defaultVisible: true,                 sortable: 'puMinValue' },
+  { key: 'paymentVsPuMin',              label: 'Média Pagto/PU',         group: 'custom',   defaultVisible: false,                sortable: 'paymentVsPuMin' },
   { key: 'minimumQuantityForApplication', label: 'Qtd. Mín. Aplicação', group: 'original', defaultVisible: false },
   { key: 'quantityAvailable',           label: 'Qtd. Disponível',       group: 'original', defaultVisible: true,                 sortable: 'quantityAvailable' },
   { key: 'indexers',                    label: 'Indexadores',            group: 'original', defaultVisible: false },

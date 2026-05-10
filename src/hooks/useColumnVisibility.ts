@@ -2,6 +2,7 @@ import { useCallback, useMemo, useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { ALL_COLUMNS } from '../config/columns';
 import type { ColumnKey } from '../types/column';
+import { loadPreferences, patchPreferences } from '../utils/preferencesFile';
 
 const STORAGE_KEY = 'yield-radar-columns';
 const IS_DEV = import.meta.env.DEV;
@@ -9,29 +10,6 @@ const IS_DEV = import.meta.env.DEV;
 const DEFAULT_VISIBLE: ColumnKey[] = ALL_COLUMNS
   .filter((c) => c.defaultVisible)
   .map((c) => c.key);
-
-async function loadPrefsFromFile(): Promise<ColumnKey[] | null> {
-  try {
-    const res = await fetch('/api/preferences');
-    if (!res.ok) return null;
-    const data = await res.json();
-    return Array.isArray(data) && data.length > 0 ? (data as ColumnKey[]) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function savePrefsToFile(keys: ColumnKey[]): Promise<void> {
-  try {
-    await fetch('/api/preferences', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(keys),
-    });
-  } catch {
-    console.warn('[YieldRadar] Falha ao salvar preferências de colunas em data/preferences.json');
-  }
-}
 
 export function useColumnVisibility() {
   const [visibleKeys, setVisibleKeys] = useLocalStorage<ColumnKey[]>(
@@ -44,8 +22,8 @@ export function useColumnVisibility() {
   // On mount in dev, load from file (takes priority over localStorage)
   useEffect(() => {
     if (!IS_DEV) return;
-    loadPrefsFromFile().then((keys) => {
-      if (keys) setVisibleKeys(keys);
+    loadPreferences().then((prefs) => {
+      if (prefs.columns && prefs.columns.length > 0) setVisibleKeys(prefs.columns);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -53,7 +31,7 @@ export function useColumnVisibility() {
   // Sync to file on every change in dev
   useEffect(() => {
     if (!IS_DEV) return;
-    savePrefsToFile(visibleKeys);
+    patchPreferences({ columns: visibleKeys });
   }, [visibleKeys]);
 
   const toggle = useCallback(

@@ -1,4 +1,5 @@
 import type { Asset } from '../types';
+import { normalizeAssetsForRead } from './assetMigration';
 
 export type ValidationResult =
   | { valid: true; assets: Asset[] }
@@ -68,6 +69,6 @@ export function validateAssetFile(data: unknown): ValidationResult {
 
   return {
     valid: true,
-    assets: items as Asset[],
+    assets: normalizeAssetsForRead(items as Asset[]),
   };
 }

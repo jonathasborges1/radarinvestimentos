@@ -28,16 +28,31 @@ export type FetchScheduleInput = {
   asset: PaymentScheduleAssetRef;
 };
 
+export type ProviderFetchResult = {
+  items: PaymentScheduleItem[];
+  /**
+   * Código IF/B3 (ex.: "CRA02500001") que a URL informada representa,
+   * extraído da própria URL ou do conteúdo retornado pelo agente. Permite
+   * que o caller compare com o `b3Code` cadastrado no ativo e detecte
+   * divergências (URL apontando para um ativo diferente).
+   *
+   * Pode ser `null` quando o provider não consegue determinar com segurança
+   * (caller deve tratar como "não verificado", não como mismatch).
+   */
+  claimedB3Code?: string | null;
+};
+
 export type PaymentScheduleProvider = {
   name: string;
   canHandle(input: FetchScheduleInput): boolean;
-  fetchSchedule(input: FetchScheduleInput): Promise<PaymentScheduleItem[]>;
+  fetchSchedule(input: FetchScheduleInput): Promise<ProviderFetchResult>;
 };
 
 export type FetchScheduleSuccess = {
   ok: true;
   provider: string;
   items: PaymentScheduleItem[];
+  claimedB3Code?: string | null;
 };
 
 export type FetchScheduleFailure = {

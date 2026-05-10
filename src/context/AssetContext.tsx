@@ -14,6 +14,7 @@ import {
   MAX_UPLOAD_HISTORY,
   stripAssetMeta,
 } from '../utils/assetKey';
+import { normalizeAssetsForRead } from '../utils/assetMigration';
 
 const IS_DEV = import.meta.env.DEV
 const UPLOAD_HISTORY_KEY = 'yield-radar-upload-history';
@@ -23,7 +24,7 @@ async function loadAssetsFromFile(): Promise<Asset[] | null> {
     const res = await fetch('/api/assets')
     if (!res.ok) return null
     const data = await res.json()
-    return Array.isArray(data) && data.length > 0 ? data : null
+    return Array.isArray(data) && data.length > 0 ? normalizeAssetsForRead(data as Asset[]) : null
   } catch {
     return null
   }
@@ -178,10 +179,11 @@ export function AssetProvider({ children }: AssetProviderProps) {
       : [];
     // On initialization, restore from localStorage if valid data exists
     if (storedAssets && Array.isArray(storedAssets) && storedAssets.length > 0) {
+      const migrated = normalizeAssetsForRead(storedAssets);
       return {
         status: 'loaded' as const,
-        assets: storedAssets,
-        originalAssets: storedAssets.map((a) => ({ ...a })),
+        assets: migrated,
+        originalAssets: migrated.map((a) => ({ ...a })),
         errorMessage: null,
         hasUnsavedChanges: false,
         uploadHistory: restoredHistory,

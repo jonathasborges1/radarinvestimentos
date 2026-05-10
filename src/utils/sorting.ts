@@ -1,4 +1,5 @@
 import type { Asset, SortConfig, SortableColumn } from '../types';
+import { computePaymentMetrics } from './paymentMetrics';
 
 /**
  * Parses a fee string (e.g., "19,550%") to a numeric value.
@@ -34,6 +35,10 @@ function getColumnValue(asset: Asset, column: SortableColumn): string | number |
       return asset.maturityDate ?? null;
     case 'puMinValue':
       return asset.puMinValue ?? null;
+    case 'paymentVsPuMin': {
+      const metrics = computePaymentMetrics(asset.paymentSchedule, asset.puMinValue);
+      return metrics.ratio12m ?? metrics.ratio6m;
+    }
     case 'quantityAvailable':
       return asset.quantityAvailable ?? null;
     case 'riskScore':

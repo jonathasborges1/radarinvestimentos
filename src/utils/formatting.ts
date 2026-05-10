@@ -45,6 +45,37 @@ export function formatCurrency(value: number | null | undefined): string {
 }
 
 /**
+ * Formata um valor numérico no padrão monetário brasileiro preservando
+ * todas as casas decimais significativas (até 8). Útil para valores de
+ * pagamento da agenda fiduciária (ex.: 13,99627600 não pode virar 14,00).
+ *
+ * - Mantém separador de milhar pt-BR (ponto) e decimal vírgula.
+ * - Não trunca: usa exatamente as casas decimais que o número tem,
+ *   no mínimo 2 (para visual consistente em valores "redondos").
+ */
+export function formatCurrencyExact(value: number | null | undefined): string {
+  if (value == null || !isFinite(value)) return EM_DASH;
+
+  const decimals = countDecimals(value);
+  const formatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: Math.max(2, decimals),
+    maximumFractionDigits: Math.max(2, decimals),
+  });
+  return formatter.format(value);
+}
+
+function countDecimals(n: number): number {
+  if (!Number.isFinite(n)) return 0;
+  // toFixed(8) preserva precisão e remove notação científica.
+  // Em seguida tiramos zeros à direita.
+  const s = n.toFixed(8).replace(/0+$/, '').replace(/\.$/, '');
+  const dot = s.indexOf('.');
+  return dot === -1 ? 0 : s.length - dot - 1;
+}
+
+/**
  * Formata um valor numérico com separador de milhar brasileiro (ponto).
  * Retorna "—" para valores nulos, undefined ou NaN.
  */

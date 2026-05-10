@@ -19,6 +19,7 @@ import type { Asset, SortConfig, SortableColumn } from '../types';
 import type { ColumnKey, ColumnDef } from '../types/column';
 import { ALL_COLUMNS } from '../config/columns';
 import { formatDate, formatCurrency, formatNumber, displayValue } from '../utils/formatting';
+import { computePaymentMetrics, type PaymentRating } from '../utils/paymentMetrics';
 
 const AGENTS_STORAGE_KEY = 'yield-radar-fiduciary-agents';
 
@@ -116,6 +117,49 @@ interface AssetTableProps {
   isMobile: boolean;
   orderedVisible: ColumnKey[];
   onReorder: (newOrder: ColumnKey[]) => void;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Fiduciary agent links cell                                          */
+/* ------------------------------------------------------------------ */
+
+function FiduciaryAgentLinks({
+  urls,
+  agents,
+  stopPropagation = false,
+}: {
+  urls: string[] | undefined;
+  agents: AgentEntry[];
+  stopPropagation?: boolean;
+}) {
+  const list = (urls ?? []).filter((u) => u && u.trim().length > 0);
+  if (list.length === 0) {
+    return <span className="text-gray-400 dark:text-gray-500">—</span>;
+  }
+  const [primary, ...rest] = list;
+  const restTitle = rest.length > 0 ? rest.map((u) => `${resolveAgentName(u, agents)} — ${u}`).join('\n') : '';
+  return (
+    <span className="inline-flex items-center gap-1">
+      <a
+        href={primary}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300 text-xs"
+        title={primary}
+        onClick={stopPropagation ? (e) => e.stopPropagation() : undefined}
+      >
+        {resolveAgentName(primary, agents)}
+      </a>
+      {rest.length > 0 && (
+        <span
+          className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 text-[10px] font-medium text-gray-600 dark:text-gray-300"
+          title={restTitle}
+        >
+          +{rest.length}
+        </span>
+      )}
+    </span>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -260,6 +304,50 @@ function yesNo(value: string | boolean | null | undefined): string {
   return displayValue(value);
 }
 
+const PAYMENT_RATING_LABEL: Record<PaymentRating, string> = {
+  ruim: 'Ruim',
+  regular: 'Regular',
+  excelente: 'Excelente',
+};
+
+const PAYMENT_RATING_CLASS: Record<PaymentRating, string> = {
+  ruim: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
+  regular: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+  excelente: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
+};
+
+function formatPaymentRatio(ratio: number | null): string {
+  if (ratio == null) return '—';
+  return `${(ratio * 100).toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}%`;
+}
+
+function PaymentVsPuMinCellContent({ asset }: { asset: Asset }) {
+  const metrics = computePaymentMetrics(asset.paymentSchedule, asset.puMinValue);
+  const ratio = metrics.ratio12m ?? metrics.ratio6m;
+  const average = metrics.avg12m ?? metrics.avg6m;
+  const count = metrics.ratio12m != null ? metrics.count12m : metrics.count6m;
+  const windowLabel = metrics.ratio12m != null ? '12m' : '6m';
+
+  if (ratio == null || !metrics.rating) {
+    return <span className="text-gray-400 dark:text-gray-500">—</span>;
+  }
+
+  const title = `Média ${windowLabel}: ${formatCurrency(average)} · ${count} pagamento(s)`;
+  return (
+    <div className="flex items-center gap-2 whitespace-nowrap" title={title}>
+      <span className="font-medium text-gray-900 dark:text-gray-100">
+        {formatPaymentRatio(ratio)}
+      </span>
+      <span className={`inline-flex rounded-full px-1.5 py-0.5 text-[10px] font-medium ${PAYMENT_RATING_CLASS[metrics.rating]}`}>
+        {PAYMENT_RATING_LABEL[metrics.rating]}
+      </span>
+    </div>
+  );
+}
+
 function renderDesktopCell(key: ColumnKey, asset: Asset, onEdit: (a: Asset) => void, onViewJson: (a: Asset) => void, agents: AgentEntry[]): React.ReactNode {
   switch (key) {
     case 'nickName':
@@ -274,6 +362,8 @@ function renderDesktopCell(key: ColumnKey, asset: Asset, onEdit: (a: Asset) => v
       return <td key={key} className={`${BASE_TD} whitespace-nowrap`}>{formatDate(asset.maturityDate)}</td>;
     case 'puMinValue':
       return <td key={key} className={`${BASE_TD} whitespace-nowrap`}>{formatCurrency(asset.puMinValue ?? null)}</td>;
+    case 'paymentVsPuMin':
+      return <td key={key} className={BASE_TD}><PaymentVsPuMinCellContent asset={asset} /></td>;
     case 'minimumQuantityForApplication':
       return <td key={key} className={BASE_TD}>{formatNumber(asset.minimumQuantityForApplication ?? null)}</td>;
     case 'quantityAvailable':
@@ -311,13 +401,7 @@ function renderDesktopCell(key: ColumnKey, asset: Asset, onEdit: (a: Asset) => v
     case 'fiduciaryAgentUrl':
       return (
         <td key={key} className="px-3 py-3 text-sm">
-          {asset.fiduciaryAgentUrl ? (
-            <a href={asset.fiduciaryAgentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300 text-xs" title={asset.fiduciaryAgentUrl}>
-              {resolveAgentName(asset.fiduciaryAgentUrl, agents)}
-            </a>
-          ) : (
-            <span className="text-gray-400 dark:text-gray-500">—</span>
-          )}
+          <FiduciaryAgentLinks urls={asset.fiduciaryAgentUrls} agents={agents} />
         </td>
       );
     case 'notes':
@@ -372,6 +456,7 @@ function mobileDetailValue(key: ColumnKey, asset: Asset, agents: AgentEntry[]): 
     case 'maturityDate': return formatDate(asset.maturityDate);
     case 'graceDate':    return formatDate(asset.graceDate);
     case 'puMinValue':   return formatCurrency(asset.puMinValue ?? null);
+    case 'paymentVsPuMin': return <PaymentVsPuMinCellContent asset={asset} />;
     case 'minimumQuantityForApplication': return formatNumber(asset.minimumQuantityForApplication ?? null);
     case 'quantityAvailable': return formatNumber(asset.quantityAvailable ?? null);
     case 'incentive':        return yesNo(asset.incentive);
@@ -382,11 +467,7 @@ function mobileDetailValue(key: ColumnKey, asset: Asset, agents: AgentEntry[]): 
     case 'favorite': return asset.favorite ? '★ Sim' : 'Não';
     case 'tags': return asset.tags && asset.tags.length > 0 ? asset.tags.join(', ') : '—';
     case 'fiduciaryAgentUrl':
-      return asset.fiduciaryAgentUrl ? (
-        <a href={asset.fiduciaryAgentUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 underline" onClick={(e) => e.stopPropagation()}>
-          {resolveAgentName(asset.fiduciaryAgentUrl, agents)}
-        </a>
-      ) : '—';
+      return <FiduciaryAgentLinks urls={asset.fiduciaryAgentUrls} agents={agents} stopPropagation />;
     default: {
       const raw = (asset as Record<string, unknown>)[key];
       return displayValue(raw);

@@ -16,7 +16,17 @@ function ensureDb() {
   if (!existsSync(FILTERS_PATH)) writeFileSync(FILTERS_PATH, 'null', 'utf-8')
 }
 
+function writeIfChanged(filePath: string, output: string) {
+  const current = existsSync(filePath) ? readFileSync(filePath, 'utf-8') : null
+  if (current !== output) writeFileSync(filePath, output, 'utf-8')
+}
+
 export default defineConfig({
+  server: {
+    watch: {
+      ignored: ['**/data/*.json'],
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -40,7 +50,7 @@ export default defineConfig({
                 } catch {
                   // Body não é JSON válido — grava como veio para preservar o erro do cliente.
                 }
-                writeFileSync(filePath, output, 'utf-8')
+                writeIfChanged(filePath, output)
                 res.end('{"ok":true}')
               })
             } else {

@@ -1,14 +1,17 @@
-[
-  "nickName",
-  "fee",
-  "maturityDate",
-  "puMinValue",
-  "quantityAvailable",
-  "ratingName",
-  "riskScore",
-  "descriptionInterestrates",
-  "descriptionAmortization",
-  "b3Code",
-  "fiduciaryAgentUrl",
-  "actions"
-]
+{
+  "columns": [
+    "nickName",
+    "fee",
+    "maturityDate",
+    "puMinValue",
+    "paymentVsPuMin",
+    "quantityAvailable",
+    "riskScore",
+    "descriptionInterestrates",
+    "descriptionAmortization",
+    "b3Code",
+    "fiduciaryAgentUrl",
+    "actions"
+  ],
+  "itemsPerPage": 100
+}

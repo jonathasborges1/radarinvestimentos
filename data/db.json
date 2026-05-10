@@ -1405,10 +1405,106 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "CRA02500001",
-    "fiduciaryAgentUrl": "https://app.opea.com.br/pt/emissoes/CRA02500001",
     "tags": [
       "comprado"
-    ]
+    ],
+    "fiduciaryAgentUrls": [
+      "https://app.opea.com.br/pt/emissoes/CRA02500001",
+      "https://www.vortx.com.br/investidor/dcm?busca=CRA02500001"
+    ],
+    "paymentSchedule": [
+      {
+        "date": "17/02/2025",
+        "type": "Pagamento",
+        "value": 6.275754,
+        "rawValue": "6,27575400"
+      },
+      {
+        "date": "17/03/2025",
+        "type": "Pagamento",
+        "value": 10.28990599,
+        "rawValue": "10,28990599"
+      },
+      {
+        "date": "15/04/2025",
+        "type": "Pagamento",
+        "value": 12.015155,
+        "rawValue": "12,01515500"
+      },
+      {
+        "date": "15/05/2025",
+        "type": "Pagamento",
+        "value": 10.86466199,
+        "rawValue": "10,86466199"
+      },
+      {
+        "date": "16/06/2025",
+        "type": "Pagamento",
+        "value": 12.59089199,
+        "rawValue": "12,59089199"
+      },
+      {
+        "date": "15/07/2025",
+        "type": "Pagamento",
+        "value": 11.43974499,
+        "rawValue": "11,43974499"
+      },
+      {
+        "date": "15/08/2025",
+        "type": "Pagamento",
+        "value": 13.16695699,
+        "rawValue": "13,16695699"
+      },
+      {
+        "date": "15/09/2025",
+        "type": "Pagamento",
+        "value": 12.015155,
+        "rawValue": "12,01515500"
+      },
+      {
+        "date": "15/10/2025",
+        "type": "Pagamento",
+        "value": 12.59089199,
+        "rawValue": "12,59089199"
+      },
+      {
+        "date": "17/11/2025",
+        "type": "Pagamento",
+        "value": 13.16695699,
+        "rawValue": "13,16695699"
+      },
+      {
+        "date": "15/12/2025",
+        "type": "Pagamento",
+        "value": 10.86466199,
+        "rawValue": "10,86466199"
+      },
+      {
+        "date": "15/01/2026",
+        "type": "Pagamento",
+        "value": 12.015155,
+        "rawValue": "12,01515500"
+      },
+      {
+        "date": "18/02/2026",
+        "type": "Pagamento",
+        "value": 12.59089199,
+        "rawValue": "12,59089199"
+      },
+      {
+        "date": "16/03/2026",
+        "type": "Pagamento",
+        "value": 10.28990599,
+        "rawValue": "10,28990599"
+      },
+      {
+        "date": "15/04/2026",
+        "type": "Pagamento",
+        "value": 12.015155,
+        "rawValue": "12,01515500"
+      }
+    ],
+    "paymentScheduleUpdatedAt": "2026-05-10T07:30:25.795Z"
   },
   {
     "nickName": "CRA SLC MAQUINAS - AGO/2031",
@@ -1595,7 +1691,6 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "CRA024003UX",
-    "fiduciaryAgentUrl": "https://ecoagro.agr.br/historico-pu/540/CRA024003UX",
     "notes": "15.04.2026\t10,08175100\n16.03.2026\t 8,63530200\n18.02.2026\t10,56436099\n15.01.2026\t10,08175100",
     "paymentSchedule": [
       {
@@ -1743,7 +1838,10 @@
         "rawValue": "3,82874700"
       }
     ],
-    "paymentScheduleUpdatedAt": "2026-05-08T22:52:13.721Z"
+    "paymentScheduleUpdatedAt": "2026-05-08T22:52:13.721Z",
+    "fiduciaryAgentUrls": [
+      "https://ecoagro.agr.br/historico-pu/540/CRA024003UX"
+    ]
   },
   {
     "nickName": "CRA UNIDAS (OURO VERDE) - DEZ/2028",
@@ -8035,12 +8133,144 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "24E2531061",
-    "fiduciaryAgentUrl": "https://app.opea.com.br/pt/emissoes/24E2531061",
     "notes": "Pagamentos abaixo de 1%\n15/05/2026\tR$ 6,75190486\n",
     "tags": [
       "ruim"
     ],
-    "trackingStatus": "ignored"
+    "trackingStatus": "ignored",
+    "fiduciaryAgentUrls": [
+      "https://app.opea.com.br/pt/emissoes/24E2531061",
+      "https://www.oliveiratrust.com.br/investidor/ativos?busca=24E2531061"
+    ],
+    "paymentSchedule": [
+      {
+        "date": "15/04/2026",
+        "type": "Pagamento",
+        "value": 7.04340359,
+        "rawValue": "7,04340359"
+      },
+      {
+        "date": "16/03/2026",
+        "type": "Pagamento",
+        "value": 5.98177597,
+        "rawValue": "5,98177597"
+      },
+      {
+        "date": "18/02/2026",
+        "type": "Pagamento",
+        "value": 7.2647156,
+        "rawValue": "7,26471560"
+      },
+      {
+        "date": "15/01/2026",
+        "type": "Pagamento",
+        "value": 6.91062924,
+        "rawValue": "6,91062924"
+      },
+      {
+        "date": "15/12/2025",
+        "type": "Pagamento",
+        "value": 6.22998949,
+        "rawValue": "6,22998949"
+      },
+      {
+        "date": "17/11/2025",
+        "type": "Pagamento",
+        "value": 7.53265298,
+        "rawValue": "7,53265298"
+      },
+      {
+        "date": "15/10/2025",
+        "type": "Pagamento",
+        "value": 7.19756243,
+        "rawValue": "7,19756243"
+      },
+      {
+        "date": "15/09/2025",
+        "type": "Pagamento",
+        "value": 6.83653177,
+        "rawValue": "6,83653177"
+      },
+      {
+        "date": "15/08/2025",
+        "type": "Pagamento",
+        "value": 7.4981892,
+        "rawValue": "7,49818920"
+      },
+      {
+        "date": "15/07/2025",
+        "type": "Pagamento",
+        "value": 6.50025573,
+        "rawValue": "6,50025573"
+      },
+      {
+        "date": "16/06/2025",
+        "type": "Pagamento",
+        "value": 7.13535834,
+        "rawValue": "7,13535834"
+      },
+      {
+        "date": "15/05/2025",
+        "type": "Pagamento",
+        "value": 6.14353407,
+        "rawValue": "6,14353407"
+      },
+      {
+        "date": "15/04/2025",
+        "type": "Pagamento",
+        "value": 6.76322781,
+        "rawValue": "6,76322781"
+      },
+      {
+        "date": "17/03/2025",
+        "type": "Pagamento",
+        "value": 5.76210542,
+        "rawValue": "5,76210542"
+      },
+      {
+        "date": "17/02/2025",
+        "type": "Pagamento",
+        "value": 7.27307942,
+        "rawValue": "7,27307942"
+      },
+      {
+        "date": "15/01/2025",
+        "type": "Pagamento",
+        "value": 6.31139837,
+        "rawValue": "6,31139837"
+      },
+      {
+        "date": "16/12/2024",
+        "type": "Pagamento",
+        "value": 5.96389389,
+        "rawValue": "5,96389389"
+      },
+      {
+        "date": "18/11/2024",
+        "type": "Pagamento",
+        "value": 7.19583729,
+        "rawValue": "7,19583729"
+      },
+      {
+        "date": "15/10/2024",
+        "type": "Pagamento",
+        "value": 6.53151668,
+        "rawValue": "6,53151668"
+      },
+      {
+        "date": "16/09/2024",
+        "type": "Pagamento",
+        "value": 6.81361772,
+        "rawValue": "6,81361772"
+      },
+      {
+        "date": "15/08/2024",
+        "type": "Pagamento",
+        "value": 6.19352585,
+        "rawValue": "6,19352585"
+      }
+    ],
+    "paymentScheduleUpdatedAt": "2026-05-10T08:04:57.128Z"
   },
   {
     "nickName": "DEB ENAUTA - DEZ/2029",
@@ -14036,10 +14266,112 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "CRA02400DW2",
-    "fiduciaryAgentUrl": "https://app.opea.com.br/pt/emissoes/CRA02400DW2",
     "notes": "amortizacao muito alta, juros muito baixo\n17/08/2026\tR$ 2,37729590\tR$ 39,99955873\n15/07/2026\tR$ 2,37715561\tR$ 39,99978782",
     "favorite": true,
-    "trackingStatus": "watching"
+    "trackingStatus": "watching",
+    "fiduciaryAgentUrls": [
+      "https://app.opea.com.br/pt/emissoes/CRA02400DW2",
+      "https://www.vortx.com.br/investidor/dcm?busca=CRA02400DW2"
+    ],
+    "paymentSchedule": [
+      {
+        "date": "15/04/2026",
+        "type": "Pagamento",
+        "value": 13.996276,
+        "rawValue": "13,99627600"
+      },
+      {
+        "date": "16/03/2026",
+        "type": "Pagamento",
+        "value": 12.104866,
+        "rawValue": "12,10486600"
+      },
+      {
+        "date": "18/02/2026",
+        "type": "Pagamento",
+        "value": 14.81467399,
+        "rawValue": "14,81467399"
+      },
+      {
+        "date": "15/01/2026",
+        "type": "Pagamento",
+        "value": 14.136541,
+        "rawValue": "14,13654100"
+      },
+      {
+        "date": "15/12/2025",
+        "type": "Pagamento",
+        "value": 12.78164199,
+        "rawValue": "12,78164199"
+      },
+      {
+        "date": "17/11/2025",
+        "type": "Pagamento",
+        "value": 15.493264,
+        "rawValue": "15,49326400"
+      },
+      {
+        "date": "15/10/2025",
+        "type": "Pagamento",
+        "value": 14.81467399,
+        "rawValue": "14,81467399"
+      },
+      {
+        "date": "15/09/2025",
+        "type": "Pagamento",
+        "value": 14.136541,
+        "rawValue": "14,13654100"
+      },
+      {
+        "date": "15/08/2025",
+        "type": "Pagamento",
+        "value": 15.493264,
+        "rawValue": "15,49326400"
+      },
+      {
+        "date": "15/07/2025",
+        "type": "Pagamento",
+        "value": 13.41506199,
+        "rawValue": "13,41506199"
+      },
+      {
+        "date": "16/06/2025",
+        "type": "Pagamento",
+        "value": 14.621677,
+        "rawValue": "14,62167700"
+      },
+      {
+        "date": "15/05/2025",
+        "type": "Pagamento",
+        "value": 12.334376,
+        "rawValue": "12,33437600"
+      },
+      {
+        "date": "15/04/2025",
+        "type": "Pagamento",
+        "value": 13.40630499,
+        "rawValue": "13,40630499"
+      },
+      {
+        "date": "17/03/2025",
+        "type": "Pagamento",
+        "value": 10.99585699,
+        "rawValue": "10,99585699"
+      },
+      {
+        "date": "17/02/2025",
+        "type": "Pagamento",
+        "value": 13.607423,
+        "rawValue": "13,60742300"
+      },
+      {
+        "date": "15/01/2025",
+        "type": "Pagamento",
+        "value": 9.19922799,
+        "rawValue": "9,19922799"
+      }
+    ],
+    "paymentScheduleUpdatedAt": "2026-05-10T08:31:20.270Z"
   },
   {
     "nickName": "CRA REDE SIM - FEV/2030",
@@ -15151,7 +15483,271 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "22E1315701",
-    "fiduciaryAgentUrl": "https://app.opea.com.br/pt/emissoes/22E1315701"
+    "fiduciaryAgentUrls": [
+      "https://app.opea.com.br/pt/emissoes/22E1315701",
+      "https://www.oliveiratrust.com.br/investidor/ativos/historico-valores/34931?label=S%C3%A9rie+001+40%C2%AA+Emiss%C3%A3o"
+    ],
+    "paymentSchedule": [
+      {
+        "date": "18/05/2026",
+        "type": "Pagamento",
+        "value": 11.549637,
+        "rawValue": "11,54963700"
+      },
+      {
+        "date": "16/04/2026",
+        "type": "Pagamento",
+        "value": 12.842476,
+        "rawValue": "12,84247600"
+      },
+      {
+        "date": "16/03/2026",
+        "type": "Pagamento",
+        "value": 10.61678899,
+        "rawValue": "10,61678899"
+      },
+      {
+        "date": "18/02/2026",
+        "type": "Pagamento",
+        "value": 12.39717899,
+        "rawValue": "12,39717899"
+      },
+      {
+        "date": "16/01/2026",
+        "type": "Pagamento",
+        "value": 12.39717899,
+        "rawValue": "12,39717899"
+      },
+      {
+        "date": "16/12/2025",
+        "type": "Pagamento",
+        "value": 11.803368,
+        "rawValue": "11,80336800"
+      },
+      {
+        "date": "17/11/2025",
+        "type": "Pagamento",
+        "value": 12.991342,
+        "rawValue": "12,99134200"
+      },
+      {
+        "date": "16/10/2025",
+        "type": "Pagamento",
+        "value": 12.991342,
+        "rawValue": "12,99134200"
+      },
+      {
+        "date": "16/09/2025",
+        "type": "Pagamento",
+        "value": 12.39717899,
+        "rawValue": "12,39717899"
+      },
+      {
+        "date": "18/08/2025",
+        "type": "Pagamento",
+        "value": 13.585856,
+        "rawValue": "13,58585600"
+      },
+      {
+        "date": "16/07/2025",
+        "type": "Pagamento",
+        "value": 12.353417,
+        "rawValue": "12,35341700"
+      },
+      {
+        "date": "16/06/2025",
+        "type": "Pagamento",
+        "value": 12.213392,
+        "rawValue": "12,21339200"
+      },
+      {
+        "date": "16/05/2025",
+        "type": "Pagamento",
+        "value": 10.780868,
+        "rawValue": "10,78086800"
+      },
+      {
+        "date": "16/04/2025",
+        "type": "Pagamento",
+        "value": 12.235621,
+        "rawValue": "12,23562100"
+      },
+      {
+        "date": "17/03/2025",
+        "type": "Pagamento",
+        "value": 9.50941,
+        "rawValue": "9,50941000"
+      },
+      {
+        "date": "17/02/2025",
+        "type": "Pagamento",
+        "value": 11.207357,
+        "rawValue": "11,20735700"
+      },
+      {
+        "date": "16/01/2025",
+        "type": "Pagamento",
+        "value": 10.355455,
+        "rawValue": "10,35545500"
+      },
+      {
+        "date": "16/12/2024",
+        "type": "Pagamento",
+        "value": 8.683171,
+        "rawValue": "8,68317100"
+      },
+      {
+        "date": "18/11/2024",
+        "type": "Pagamento",
+        "value": 9.736007,
+        "rawValue": "9,73600700"
+      },
+      {
+        "date": "16/10/2024",
+        "type": "Pagamento",
+        "value": 9.618465,
+        "rawValue": "9,61846500"
+      },
+      {
+        "date": "16/09/2024",
+        "type": "Pagamento",
+        "value": 9.032278,
+        "rawValue": "9,03227800"
+      },
+      {
+        "date": "16/08/2024",
+        "type": "Pagamento",
+        "value": 9.89673,
+        "rawValue": "9,89673000"
+      },
+      {
+        "date": "16/07/2024",
+        "type": "Pagamento",
+        "value": 9.032278,
+        "rawValue": "9,03227800"
+      },
+      {
+        "date": "17/06/2024",
+        "type": "Pagamento",
+        "value": 9.032278,
+        "rawValue": "9,03227800"
+      },
+      {
+        "date": "16/05/2024",
+        "type": "Pagamento",
+        "value": 9.19532,
+        "rawValue": "9,19532000"
+      },
+      {
+        "date": "16/04/2024",
+        "type": "Pagamento",
+        "value": 8.871614,
+        "rawValue": "8,87161400"
+      },
+      {
+        "date": "18/03/2024",
+        "type": "Pagamento",
+        "value": 9.601573,
+        "rawValue": "9,60157300"
+      },
+      {
+        "date": "16/02/2024",
+        "type": "Pagamento",
+        "value": 9.853371,
+        "rawValue": "9,85337100"
+      },
+      {
+        "date": "16/01/2024",
+        "type": "Pagamento",
+        "value": 9.024612,
+        "rawValue": "9,02461200"
+      },
+      {
+        "date": "18/12/2023",
+        "type": "Pagamento",
+        "value": 10.851239,
+        "rawValue": "10,85123900"
+      },
+      {
+        "date": "16/11/2023",
+        "type": "Pagamento",
+        "value": 10.623005,
+        "rawValue": "10,62300500"
+      },
+      {
+        "date": "16/10/2023",
+        "type": "Pagamento",
+        "value": 9.79191,
+        "rawValue": "9,79191000"
+      },
+      {
+        "date": "18/09/2023",
+        "type": "Pagamento",
+        "value": 11.634861,
+        "rawValue": "11,63486100"
+      },
+      {
+        "date": "16/08/2023",
+        "type": "Pagamento",
+        "value": 11.900469,
+        "rawValue": "11,90046900"
+      },
+      {
+        "date": "17/07/2023",
+        "type": "Pagamento",
+        "value": 11.474751,
+        "rawValue": "11,47475100"
+      },
+      {
+        "date": "16/06/2023",
+        "type": "Pagamento",
+        "value": 12.024446,
+        "rawValue": "12,02444600"
+      },
+      {
+        "date": "16/05/2023",
+        "type": "Pagamento",
+        "value": 10.376275,
+        "rawValue": "10,37627500"
+      },
+      {
+        "date": "17/04/2023",
+        "type": "Pagamento",
+        "value": 11.474751,
+        "rawValue": "11,47475100"
+      },
+      {
+        "date": "16/03/2023",
+        "type": "Pagamento",
+        "value": 9.827474,
+        "rawValue": "9,82747400"
+      },
+      {
+        "date": "16/02/2023",
+        "type": "Pagamento",
+        "value": 12.574429,
+        "rawValue": "12,57442900"
+      },
+      {
+        "date": "16/12/2022",
+        "type": "Pagamento",
+        "value": 12.024446,
+        "rawValue": "12,02444600"
+      },
+      {
+        "date": "16/11/2022",
+        "type": "Pagamento",
+        "value": 10.925364,
+        "rawValue": "10,92536400"
+      },
+      {
+        "date": "17/10/2022",
+        "type": "Pagamento",
+        "value": 10.925364,
+        "rawValue": "10,92536400"
+      }
+    ],
+    "paymentScheduleUpdatedAt": "2026-05-10T07:54:11.221Z"
   },
   {
     "nickName": "CRA SÃO SALVADOR - JUL/2027",
@@ -15301,7 +15897,9 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "CRA024003UY",
-    "fiduciaryAgentUrl": "https://ecoagro.agr.br/emissoes-integra/540"
+    "fiduciaryAgentUrls": [
+      "https://ecoagro.agr.br/emissoes-integra/540"
+    ]
   },
   {
     "nickName": "CRA MARFRIG - ABR/2035",
@@ -15895,7 +16493,6 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "CRA025008SY",
-    "fiduciaryAgentUrl": "https://ecoagro.agr.br/emissoes-integra/662",
     "notes": "Bom ativo - paga acima de 1%\n15.04.2026\t12,41774000\n16.03.2026\t10,77188000\n18.02.2026\t13,18135000\n15.01.2026\t12,57844000\t",
     "favorite": true,
     "paymentSchedule": [
@@ -15936,7 +16533,10 @@
         "rawValue": "6,56910000"
       }
     ],
-    "paymentScheduleUpdatedAt": "2026-05-08T23:01:51.018Z"
+    "paymentScheduleUpdatedAt": "2026-05-08T23:01:51.018Z",
+    "fiduciaryAgentUrls": [
+      "https://ecoagro.agr.br/emissoes-integra/662"
+    ]
   },
   {
     "nickName": "CRA LAR COOPERATIVA - MAR/2031",
@@ -16271,7 +16871,61 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "CRA025006SR",
-    "fiduciaryAgentUrl": "https://app.opea.com.br/pt/emissoes/CRA025006SR"
+    "fiduciaryAgentUrls": [
+      "https://app.opea.com.br/pt/emissoes/CRA025006SR",
+      "https://www.vortx.com.br/investidor/dcm?busca=CRA025006SR"
+    ],
+    "paymentSchedule": [
+      {
+        "date": "16/04/2026",
+        "type": "Pagamento",
+        "value": 12.53543,
+        "rawValue": "12,53543000"
+      },
+      {
+        "date": "16/03/2026",
+        "type": "Pagamento",
+        "value": 10.37098,
+        "rawValue": "10,37098000"
+      },
+      {
+        "date": "18/02/2026",
+        "type": "Pagamento",
+        "value": 12.69019999,
+        "rawValue": "12,69019999"
+      },
+      {
+        "date": "15/01/2026",
+        "type": "Pagamento",
+        "value": 12.1099,
+        "rawValue": "12,10990000"
+      },
+      {
+        "date": "15/12/2025",
+        "type": "Pagamento",
+        "value": 10.95028,
+        "rawValue": "10,95028000"
+      },
+      {
+        "date": "17/11/2025",
+        "type": "Pagamento",
+        "value": 13.27083999,
+        "rawValue": "13,27083999"
+      },
+      {
+        "date": "15/10/2025",
+        "type": "Pagamento",
+        "value": 12.69019999,
+        "rawValue": "12,69019999"
+      },
+      {
+        "date": "15/09/2025",
+        "type": "Pagamento",
+        "value": 5.17210999,
+        "rawValue": "5,17210999"
+      }
+    ],
+    "paymentScheduleUpdatedAt": "2026-05-10T08:38:21.803Z"
   },
   {
     "nickName": "CRA SÃO SALVADOR ALIMENTOS - ABR/2030",
@@ -17198,9 +17852,21 @@
     "accrual": null,
     "isOverFgc": null,
     "b3Code": "26C3164285",
-    "fiduciaryAgentUrl": "https://app.opea.com.br/pt/emissoes/26C3164285",
     "notes": "Registros de pagamento em\n  \n14/04/2026 - R$ 3,69049000\n13/05/2026\tR$ 10,00635000\n12/06/2026\tR$ 10,93411000",
-    "trackingStatus": "completed"
+    "trackingStatus": "completed",
+    "fiduciaryAgentUrls": [
+      "https://app.opea.com.br/pt/emissoes/26C3164285",
+      "https://www.pentagonotrustee.com.br/Site/DetalhesEmissor?ativo=26C3164285"
+    ],
+    "paymentSchedule": [
+      {
+        "date": "14/04/2026",
+        "type": "Pagamento",
+        "value": 3.69049,
+        "rawValue": "3,69049000"
+      }
+    ],
+    "paymentScheduleUpdatedAt": "2026-05-10T08:57:03.188Z"
   },
   {
     "nickName": "CRI EZTEC - NOV/2030",

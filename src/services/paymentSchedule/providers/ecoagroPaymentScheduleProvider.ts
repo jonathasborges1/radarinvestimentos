@@ -2,6 +2,7 @@ import type {
   FetchScheduleInput,
   PaymentScheduleItem,
   PaymentScheduleProvider,
+  ProviderFetchResult,
 } from '../types';
 import { fetchHtmlViaProxy } from '../fetchHtmlViaProxy';
 
@@ -208,20 +209,18 @@ export const ecoagroPaymentScheduleProvider: PaymentScheduleProvider = {
       return false;
     }
   },
-  async fetchSchedule(input: FetchScheduleInput): Promise<PaymentScheduleItem[]> {
+  async fetchSchedule(input: FetchScheduleInput): Promise<ProviderFetchResult> {
     const target = resolveEcoagroHistoricoUrl(input);
     if (!target) {
       throw new Error(
         'URL Ecoagro não reconhecida. Cole o link de "historico-pu/{emissionId}/{codigo}" ou "emissoes-integra/{emissionId}".',
       );
     }
+    // O ticker (último segmento do path) é o código IF do ativo na Ecoagro.
+    const claimedMatch = target.match(/\/historico-pu\/\d+\/([A-Za-z0-9]+)/i);
+    const claimedB3Code = claimedMatch ? claimedMatch[1] : null;
+
     const html = await fetchHtmlViaProxy(target);
-    const items = parseEcoagroHistoricoPuHtml(html);
-    if (items.length === 0) {
-      throw new Error(
-        'Nenhum pagamento com TOTAL > 0 encontrado. Confirme o link e se a página renderiza a tabela no servidor.',
-      );
-    }
-    return items;
+    return { items: parseEcoagroHistoricoPuHtml(html), claimedB3Code };
   },
 };

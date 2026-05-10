@@ -156,6 +156,57 @@ describe('sortAssets', () => {
     });
   });
 
+  describe('sorting by paymentVsPuMin', () => {
+    const assets = [
+      createAsset({
+        nickName: 'Regular',
+        code: 1,
+        puMinValue: 1000,
+        paymentSchedule: [{ date: '2026-01-15', type: 'Pagamento', value: 11 }],
+      }),
+      createAsset({
+        nickName: 'Excelente',
+        code: 2,
+        puMinValue: 1000,
+        paymentSchedule: [{ date: '2026-01-15', type: 'Pagamento', value: 13 }],
+      }),
+      createAsset({
+        nickName: 'Sem dados',
+        code: 3,
+        puMinValue: 1000,
+        paymentSchedule: [],
+      }),
+      createAsset({
+        nickName: 'Ruim',
+        code: 4,
+        puMinValue: 1000,
+        paymentSchedule: [{ date: '2026-01-15', type: 'Pagamento', value: 8 }],
+      }),
+    ];
+
+    it('sorts ascending by payment average ratio and pushes missing metrics to the end', () => {
+      const config: SortConfig = { column: 'paymentVsPuMin', direction: 'asc' };
+      const result = sortAssets(assets, config);
+      expect(result.map((a) => a.nickName)).toEqual([
+        'Ruim',
+        'Regular',
+        'Excelente',
+        'Sem dados',
+      ]);
+    });
+
+    it('sorts descending by payment average ratio and pushes missing metrics to the end', () => {
+      const config: SortConfig = { column: 'paymentVsPuMin', direction: 'desc' };
+      const result = sortAssets(assets, config);
+      expect(result.map((a) => a.nickName)).toEqual([
+        'Excelente',
+        'Regular',
+        'Ruim',
+        'Sem dados',
+      ]);
+    });
+  });
+
   describe('sorting by quantityAvailable', () => {
     const assets = [
       createAsset({ nickName: 'A', code: 1, quantityAvailable: 300 }),

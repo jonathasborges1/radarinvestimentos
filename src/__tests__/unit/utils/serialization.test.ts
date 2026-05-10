@@ -84,7 +84,7 @@ describe('serializeAssets', () => {
         guaranteeFGC: false,
         redemptionType: null,
         b3Code: 'B3TEST',
-        fiduciaryAgentUrl: 'https://example.com',
+        fiduciaryAgentUrls: ['https://example.com', 'https://other.com'],
         notes: 'Some notes',
         favorite: true,
         tags: ['tag1', 'tag2'],
@@ -96,7 +96,7 @@ describe('serializeAssets', () => {
     const parsed = JSON.parse(result);
 
     expect(parsed.data[0].b3Code).toBe('B3TEST');
-    expect(parsed.data[0].fiduciaryAgentUrl).toBe('https://example.com');
+    expect(parsed.data[0].fiduciaryAgentUrls).toEqual(['https://example.com', 'https://other.com']);
     expect(parsed.data[0].notes).toBe('Some notes');
     expect(parsed.data[0].favorite).toBe(true);
     expect(parsed.data[0].tags).toEqual(['tag1', 'tag2']);

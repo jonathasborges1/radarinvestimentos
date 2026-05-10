@@ -6,6 +6,7 @@ export type SortableColumn =
   | 'fee'
   | 'maturityDate'
   | 'puMinValue'
+  | 'paymentVsPuMin'
   | 'quantityAvailable'
   | 'riskScore'
   | 'ratingName'

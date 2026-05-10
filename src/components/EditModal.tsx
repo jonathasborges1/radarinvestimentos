@@ -8,6 +8,13 @@ import { displayValue } from '../utils/formatting';
 import { isLocalhost, fetchPaymentSchedule } from '../utils/scraper-client';
 import { fetchPaymentScheduleViaProvider } from '../services/paymentSchedule';
 import { parseEcoagroTotal } from '../services/paymentSchedule/providers/ecoagroPaymentScheduleProvider';
+import { sortPaymentsNewestFirst } from '../utils/paymentMetrics';
+
+function timestamp(): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `[${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}]`;
+}
 
 interface EditModalProps {
   asset: Asset | null;
@@ -24,12 +31,18 @@ interface EditModalProps {
     payments: PaymentEvent[],
     fetchedAt: string,
   ) => void;
+  /**
+   * Disparado imediatamente quando o usuário comita uma alteração na lista
+   * de URLs de agentes fiduciários (Enter, remover ou clicar em chip de
+   * agente conhecido). Permite persistir sem exigir o clique em "Salvar".
+   */
+  onUrlsCommitted?: (code: number | string, urls: string[]) => void;
   isMobile: boolean;
 }
 
 interface EditableFields {
   b3Code: string;
-  fiduciaryAgentUrl: string;
+  fiduciaryAgentUrls: string[];
   notes: string;
   favorite: boolean;
   tags: string[];
@@ -41,10 +54,10 @@ interface EditableFields {
  * Displays original fields as read-only and editable custom fields.
  * Fullscreen on mobile, centered overlay on desktop.
  */
-export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, isMobile }: EditModalProps) {
+export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, onUrlsCommitted, isMobile }: EditModalProps) {
   const [editableFields, setEditableFields] = useState<EditableFields>({
     b3Code: '',
-    fiduciaryAgentUrl: '',
+    fiduciaryAgentUrls: [],
     notes: '',
     favorite: false,
     tags: [],
@@ -53,28 +66,34 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, i
 
   const modalRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
-  const [scrapingStatus, setScrapingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [scrapingStatus, setScrapingStatus] = useState<'idle' | 'loading' | 'success' | 'empty' | 'error'>('idle');
   const [scrapeError, setScrapeError] = useState<string | null>(null);
   const [scrapeLogs, setScrapeLogs] = useState<string[]>([]);
   const [paymentSchedule, setPaymentSchedule] = useState<PaymentEvent[]>([]);
+  const [b3CodeMismatch, setB3CodeMismatch] = useState<{ expected: string; claimed: string; provider: string; url: string } | null>(null);
 
-  // Initialize editable fields when asset changes
+  // Re-inicializa os campos APENAS quando trocamos para outro ativo (diferente
+  // `code`). Auto-saves (URLs, pagamentos) trocam a referência do `asset` mas
+  // mantêm o mesmo código — nesses casos preservamos o estado em edição para
+  // não regredir o que o usuário acabou de digitar.
   useEffect(() => {
     if (asset) {
       setEditableFields({
         b3Code: asset.b3Code || '',
-        fiduciaryAgentUrl: asset.fiduciaryAgentUrl || '',
+        fiduciaryAgentUrls: asset.fiduciaryAgentUrls ? [...asset.fiduciaryAgentUrls] : [],
         notes: asset.notes || '',
         favorite: asset.favorite || false,
         tags: asset.tags || [],
         trackingStatus: asset.trackingStatus || '',
       });
-      setPaymentSchedule(asset.paymentSchedule || []);
+      setPaymentSchedule(asset.paymentSchedule ? sortPaymentsNewestFirst(asset.paymentSchedule) : []);
       setScrapingStatus('idle');
       setScrapeError(null);
       setScrapeLogs([]);
+      setB3CodeMismatch(null);
     }
-  }, [asset]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asset?.code]);
 
   // Focus trap: focus the modal when opened
   useEffect(() => {
@@ -106,64 +125,123 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, i
   }, [isOpen, handleKeyDown]);
 
   const handleFetchPayments = useCallback(async () => {
-    const url = editableFields.fiduciaryAgentUrl;
-    if (!url || !asset) return;
+    const urls = editableFields.fiduciaryAgentUrls.map((u) => u.trim()).filter((u) => u.length > 0);
+    if (urls.length === 0 || !asset) return;
 
     setScrapingStatus('loading');
     setScrapeError(null);
     setScrapeLogs([]);
+    setB3CodeMismatch(null);
 
-    // 1. Tenta a nova abstração de provedores (Ecoagro inicialmente).
-    // Passa também o b3Code editado no formulário (ainda não persistido)
-    // para que o provider possa sintetizar a URL do histórico mesmo se o
-    // usuário acabou de digitá-lo nesta sessão.
-    const providerResult = await fetchPaymentScheduleViaProvider({
-      fiduciaryAgentUrl: url,
-      asset: {
-        code: asset.code,
-        nickName: asset.nickName,
-        b3Code: editableFields.b3Code || asset.b3Code,
-      },
-    });
+    // Push incremental para que o painel de execução atualize em tempo real.
+    const pushLog = (msg: string) => setScrapeLogs((prev) => [...prev, `${timestamp()} ${msg}`]);
+    const pushLogs = (msgs: string[]) =>
+      setScrapeLogs((prev) => [...prev, ...msgs.map((m) => `${timestamp()} ${m}`)]);
 
-    if (providerResult.ok) {
-      const events: PaymentEvent[] = providerResult.items.map(item => ({
-        date: item.date,
-        type: 'Pagamento',
-        value: parseEcoagroTotal(item.total),
-        rawValue: item.total,
-      }));
-      const fetchedAt = new Date().toISOString();
-      setPaymentSchedule(events);
-      setScrapeLogs([
-        `[${providerResult.provider}] ${events.length} pagamento(s) com TOTAL > 0 extraído(s).`,
-      ]);
-      setScrapingStatus('success');
-      // Persistência imediata (localStorage + data/db.json em dev).
-      onPaymentsFetched?.(asset.code, events, fetchedAt);
+    const expectedB3Code = (editableFields.b3Code || asset.b3Code || '').trim();
+    const normalize = (s: string) => s.trim().toUpperCase().replace(/\s+/g, '');
+
+    let lastError: string | null = null;
+    let anyEmptySuccess = false;
+
+    // Tenta cada URL na ordem informada — usa a primeira que retornar pagamentos > 0.
+    // Se uma URL responder ok mas com tabela zerada, segue tentando as próximas.
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i];
+      pushLog(`[${i + 1}/${urls.length}] Tentando ${url}`);
+
+      // 1. Provider conhecido (Ecoagro / Vortx / Oliveira Trust).
+      const providerResult = await fetchPaymentScheduleViaProvider({
+        fiduciaryAgentUrl: url,
+        asset: {
+          code: asset.code,
+          nickName: asset.nickName,
+          b3Code: editableFields.b3Code || asset.b3Code,
+        },
+      });
+
+      if (providerResult.ok) {
+        // Validação de b3Code, se possível, ANTES de aceitar o resultado.
+        const claimed = providerResult.claimedB3Code ?? null;
+        if (expectedB3Code && claimed) {
+          if (normalize(claimed) !== normalize(expectedB3Code)) {
+            pushLog(`[${providerResult.provider}] ⚠ divergência: URL retornou para "${claimed}", mas o Código B3 do ativo é "${expectedB3Code}". Pulando esta URL.`);
+            setB3CodeMismatch({
+              expected: expectedB3Code,
+              claimed,
+              provider: providerResult.provider,
+              url,
+            });
+            lastError = `URL aponta para o ativo "${claimed}", divergente do Código B3 informado ("${expectedB3Code}").`;
+            continue;
+          }
+          pushLog(`[${providerResult.provider}] ✓ Código B3 confere (${claimed}).`);
+        } else if (expectedB3Code && !claimed) {
+          pushLog(`[${providerResult.provider}] aviso: não foi possível verificar o Código B3 (provider não retornou claim).`);
+        }
+
+        if (providerResult.items.length === 0) {
+          pushLog(`[${providerResult.provider}] busca concluída, mas a tabela está zerada (nenhum TOTAL > 0).`);
+          anyEmptySuccess = true;
+          continue;
+        }
+        const events: PaymentEvent[] = sortPaymentsNewestFirst(providerResult.items.map(item => ({
+          date: item.date,
+          type: 'Pagamento',
+          value: parseEcoagroTotal(item.total),
+          rawValue: item.total,
+        })));
+        const fetchedAt = new Date().toISOString();
+        pushLog(`[${providerResult.provider}] ${events.length} pagamento(s) com TOTAL > 0 extraído(s).`);
+        setPaymentSchedule(events);
+        setScrapingStatus('success');
+        onPaymentsFetched?.(asset.code, events, fetchedAt);
+        return;
+      }
+
+      if (!providerResult.unsupported) {
+        pushLog(`[${providerResult.provider ?? 'provider'}] ${providerResult.error}`);
+        lastError = providerResult.error;
+        continue;
+      }
+
+      // 2. Fallback: scraper legado (Opea / genérico) — só para URLs sem provider conhecido.
+      pushLog('[legacy] Sem provider conhecido para esta URL, usando scraper genérico…');
+      const legacy = await fetchPaymentSchedule(url);
+      if (legacy.logs && legacy.logs.length > 0) pushLogs(legacy.logs);
+      if (legacy.success && legacy.payments && legacy.payments.length > 0) {
+        const fetchedAt = new Date().toISOString();
+        const payments = sortPaymentsNewestFirst(legacy.payments);
+        pushLog(`[legacy] ${payments.length} pagamento(s) extraído(s).`);
+        setPaymentSchedule(payments);
+        setScrapingStatus('success');
+        onPaymentsFetched?.(asset.code, payments, fetchedAt);
+        return;
+      }
+      if (legacy.success) {
+        pushLog('[legacy] busca concluída, mas a tabela está zerada.');
+        anyEmptySuccess = true;
+        continue;
+      }
+      lastError = legacy.error || 'Erro desconhecido';
+    }
+
+    // Pelo menos uma URL respondeu ok mas tabela zerada: estado "empty" (não é erro).
+    if (anyEmptySuccess) {
+      pushLog('Nenhuma URL retornou pagamentos > 0. Tabelas estão zeradas.');
+      setScrapeError(null);
+      setScrapingStatus('empty');
       return;
     }
 
-    // Provider conhecido falhou (ex.: timeout, página vazia): exibimos o erro.
-    if (!providerResult.unsupported) {
-      setScrapeError(providerResult.error);
-      setScrapingStatus('error');
-      return;
-    }
-
-    // 2. Fallback: scraper legado (Opea / genérico).
-    const legacy = await fetchPaymentSchedule(url);
-    setScrapeLogs(legacy.logs || []);
-    if (legacy.success && legacy.payments) {
-      const fetchedAt = new Date().toISOString();
-      setPaymentSchedule(legacy.payments);
-      setScrapingStatus('success');
-      onPaymentsFetched?.(asset.code, legacy.payments, fetchedAt);
-    } else {
-      setScrapeError(legacy.error || 'Erro desconhecido');
-      setScrapingStatus('error');
-    }
-  }, [editableFields.fiduciaryAgentUrl, asset, onPaymentsFetched]);
+    pushLog(`Falha em todas as ${urls.length} URL(s).`);
+    setScrapeError(
+      lastError
+        ? `Nenhuma das ${urls.length} URL(s) retornou pagamentos. Última falha: ${lastError}`
+        : `Nenhuma das ${urls.length} URL(s) retornou pagamentos.`,
+    );
+    setScrapingStatus('error');
+  }, [editableFields.fiduciaryAgentUrls, editableFields.b3Code, asset, onPaymentsFetched]);
 
   if (!isOpen || !asset) {
     return null;
@@ -173,7 +251,10 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, i
     const updatedAsset: Asset = {
       ...asset,
       b3Code: editableFields.b3Code || undefined,
-      fiduciaryAgentUrl: editableFields.fiduciaryAgentUrl || undefined,
+      fiduciaryAgentUrls:
+        editableFields.fiduciaryAgentUrls.filter((u) => u.trim().length > 0).length > 0
+          ? editableFields.fiduciaryAgentUrls.map((u) => u.trim()).filter((u) => u.length > 0)
+          : undefined,
       notes: editableFields.notes || undefined,
       favorite: editableFields.favorite || undefined,
       tags: editableFields.tags.length > 0 ? editableFields.tags : undefined,
@@ -270,10 +351,15 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, i
               />
             </div>
 
-            {/* fiduciaryAgentUrl */}
+            {/* fiduciaryAgentUrls */}
             <FiduciaryAgentInput
-              value={editableFields.fiduciaryAgentUrl}
-              onChange={(url) => setEditableFields((prev) => ({ ...prev, fiduciaryAgentUrl: url }))}
+              value={editableFields.fiduciaryAgentUrls}
+              onChange={(urls) => setEditableFields((prev) => ({ ...prev, fiduciaryAgentUrls: urls }))}
+              onCommit={(urls) => {
+                if (!asset) return;
+                const cleaned = urls.map((u) => u.trim()).filter((u) => u.length > 0);
+                onUrlsCommitted?.(asset.code, cleaned);
+              }}
             />
 
             {/* notes */}
@@ -322,10 +408,12 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, i
           {isLocalhost() && (
             <PaymentScheduleSection
               payments={paymentSchedule}
+              puMinValue={asset.puMinValue}
               scrapingStatus={scrapingStatus}
               scrapeError={scrapeError}
               scrapeLogs={scrapeLogs}
-              hasUrl={!!editableFields.fiduciaryAgentUrl}
+              b3CodeMismatch={b3CodeMismatch}
+              hasUrl={editableFields.fiduciaryAgentUrls.some((u) => u.trim().length > 0)}
               updatedAt={asset.paymentScheduleUpdatedAt}
               onFetch={handleFetchPayments}
               onClear={() => setPaymentSchedule([])}

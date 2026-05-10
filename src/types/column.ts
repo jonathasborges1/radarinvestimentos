@@ -7,6 +7,7 @@ export type ColumnKey =
   | 'fee'
   | 'maturityDate'
   | 'puMinValue'
+  | 'paymentVsPuMin'
   | 'minimumQuantityForApplication'
   | 'quantityAvailable'
   | 'indexers'

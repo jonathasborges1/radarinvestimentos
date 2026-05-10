@@ -25,7 +25,7 @@ export type Asset = {
 
   // Campos customizados (adicionados pelo usuário)
   b3Code?: string;
-  fiduciaryAgentUrl?: string;
+  fiduciaryAgentUrls?: string[];
   notes?: string;
   favorite?: boolean;
   tags?: string[];

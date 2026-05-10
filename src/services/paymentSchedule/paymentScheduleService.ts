@@ -49,8 +49,13 @@ export async function fetchPaymentScheduleViaProvider(
   }
 
   try {
-    const items = await provider.fetchSchedule(input);
-    return { ok: true, provider: provider.name, items };
+    const result = await provider.fetchSchedule(input);
+    return {
+      ok: true,
+      provider: provider.name,
+      items: result.items,
+      claimedB3Code: result.claimedB3Code ?? null,
+    };
   } catch (err) {
     return {
       ok: false,
