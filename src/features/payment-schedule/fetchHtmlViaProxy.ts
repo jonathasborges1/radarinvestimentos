@@ -20,7 +20,20 @@ export class ProxyUnavailableError extends Error {
   }
 }
 
+export interface FetchHtmlResult {
+  html: string;
+  cached: boolean;
+}
+
 export async function fetchHtmlViaProxy(url: string): Promise<string> {
+  const result = await fetchHtmlViaProxyDetailed(url);
+  return result.html;
+}
+
+/**
+ * Detailed version that also returns cache status.
+ */
+export async function fetchHtmlViaProxyDetailed(url: string): Promise<FetchHtmlResult> {
   let response: Response;
   try {
     response = await fetch(`${PROXY_URL}/fetch-html`, {
@@ -36,18 +49,25 @@ export async function fetchHtmlViaProxy(url: string): Promise<string> {
     throw new ProxyUnavailableError({ cause: err });
   }
 
+  // HTTP 400 = client error (invalid URL)
+  // HTTP 500 = proxy internal bug
   if (!response.ok) {
-    throw new Error(`Proxy retornou HTTP ${response.status}.`);
+    const data = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+    throw new Error(
+      (data as { error?: string }).error || `Proxy retornou HTTP ${response.status}.`,
+    );
   }
 
+  // HTTP 200 — parse the JSON payload
   const data = (await response.json()) as
-    | { ok: true; status: number; html: string }
+    | { ok: true; status: number; html: string; cached?: boolean }
     | { ok: false; error: string; status?: number };
 
   if (!data.ok) {
+    // Upstream failure reported gracefully by proxy (not a proxy bug)
     const status = 'status' in data && data.status ? ` (HTTP ${data.status})` : '';
     throw new Error(`${data.error || 'Falha ao buscar a página remota'}${status}`);
   }
 
-  return data.html;
+  return { html: data.html, cached: data.cached ?? false };
 }

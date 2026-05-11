@@ -1,10 +1,11 @@
+/// <reference types="node" />
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { parseEcoagroHistoricoPuHtml } from '../../../services/paymentSchedule/providers/ecoagroPaymentScheduleProvider';
+import { parseEcoagroHistoricoPuHtml } from '../providers/ecoagroPaymentScheduleProvider';
 
 const fixture = readFileSync(
-  resolve(__dirname, '../../fixtures/ecoagro-cra025008sy.html'),
+  resolve(__dirname, '../../../__tests__/fixtures/ecoagro-cra025008sy.html'),
   'utf-8',
 );
 

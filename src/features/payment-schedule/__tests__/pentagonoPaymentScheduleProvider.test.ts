@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import {
   buildPentagonoEventosUrl,
   parsePentagonoTab5Html,
   parsePentagonoValue,
   pentagonoPaymentScheduleProvider,
-} from '../../../services/paymentSchedule/providers/pentagonoPaymentScheduleProvider';
+} from '../providers/pentagonoPaymentScheduleProvider';
 
 const TAB5_HTML = `
 <!doctype html>
@@ -36,7 +36,7 @@ describe('buildPentagonoEventosUrl', () => {
 });
 
 describe('parsePentagonoValue', () => {
-  it('parseia números com vírgula decimal e ponto de milhar', () => {
+  it('parseia nÃºmeros com vÃ­rgula decimal e ponto de milhar', () => {
     expect(parsePentagonoValue('9,36480000')).toBe(9.3648);
     expect(parsePentagonoValue('1.000,00000000')).toBe(1000);
     expect(parsePentagonoValue(' 12,5 ')).toBe(12.5);
@@ -45,8 +45,8 @@ describe('parsePentagonoValue', () => {
 
 describe('parsePentagonoTab5Html', () => {
   it('extrai apenas eventos de Juros com data <= hoje', () => {
-    // Hoje fixado: 2026-05-10. Mantém 14/04/2026 (passado) e 10/05/2026 (hoje).
-    // Descarta 13/05/2026 e 12/06/2026 (futuros) e a Amortização (evento != Juros).
+    // Hoje fixado: 2026-05-10. MantÃ©m 14/04/2026 (passado) e 10/05/2026 (hoje).
+    // Descarta 13/05/2026 e 12/06/2026 (futuros) e a AmortizaÃ§Ã£o (evento != Juros).
     const items = parsePentagonoTab5Html(TAB5_HTML, new Date(2026, 4, 10));
     expect(items).toEqual([
       { date: '14/04/2026', total: '3,69049000' },
@@ -59,19 +59,19 @@ describe('parsePentagonoTab5Html', () => {
     expect(items.some((i) => i.date === '10/05/2026')).toBe(true);
   });
 
-  it('exclui amortização ordinária (apenas Juros conta)', () => {
+  it('exclui amortizaÃ§Ã£o ordinÃ¡ria (apenas Juros conta)', () => {
     const items = parsePentagonoTab5Html(TAB5_HTML, new Date(2030, 0, 1));
-    // Já que today é 2030, todas as datas do mock são passadas.
-    // Mas só os eventos "Juros" entram.
+    // JÃ¡ que today Ã© 2030, todas as datas do mock sÃ£o passadas.
+    // Mas sÃ³ os eventos "Juros" entram.
     expect(items.every((i) => i)).toBe(true);
     expect(items.filter((i) => i.total === '1.000,00000000')).toEqual([]);
   });
 
-  it('retorna [] quando tab-5 não está presente', () => {
+  it('retorna [] quando tab-5 nÃ£o estÃ¡ presente', () => {
     expect(parsePentagonoTab5Html('<html><body><div id="tab-1"></div></body></html>')).toEqual([]);
   });
 
-  it('retorna [] quando o tbody está vazio', () => {
+  it('retorna [] quando o tbody estÃ¡ vazio', () => {
     const html = '<div id="tab-5"><table><tbody></tbody></table></div>';
     expect(parsePentagonoTab5Html(html)).toEqual([]);
   });
@@ -105,3 +105,4 @@ describe('pentagonoPaymentScheduleProvider.canHandle', () => {
     ).toBe(false);
   });
 });
+

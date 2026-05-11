@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import type { Asset, PaymentEvent } from '../types';
+import { B3CodeFinderPanel } from '../features/b3-code-search/components/B3CodeFinderPanel';
 import { FiduciaryAgentInput } from './FiduciaryAgentInput';
 import { TagsInput } from './TagsInput';
 import { TrackingStatusSelect } from './TrackingStatusSelect';
 import { PaymentScheduleSection } from './PaymentScheduleSection';
 import { displayValue } from '../utils/formatting';
 import { isLocalhost, fetchPaymentSchedule } from '../utils/scraper-client';
-import { fetchPaymentScheduleViaProvider } from '../services/paymentSchedule';
-import { parseEcoagroTotal } from '../services/paymentSchedule/providers/ecoagroPaymentScheduleProvider';
+import { fetchPaymentScheduleViaProvider } from '../features/payment-schedule';
+import { parseEcoagroTotal } from '../features/payment-schedule/providers/ecoagroPaymentScheduleProvider';
 import { sortPaymentsNewestFirst } from '../utils/paymentMetrics';
 
 function timestamp(): string {
@@ -71,6 +72,7 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
   const [scrapeLogs, setScrapeLogs] = useState<string[]>([]);
   const [paymentSchedule, setPaymentSchedule] = useState<PaymentEvent[]>([]);
   const [b3CodeMismatch, setB3CodeMismatch] = useState<{ expected: string; claimed: string; provider: string; url: string } | null>(null);
+  const [showJsonPreview, setShowJsonPreview] = useState(false);
 
   // Re-inicializa os campos APENAS quando trocamos para outro ativo (diferente
   // `code`). Auto-saves (URLs, pagamentos) trocam a referência do `asset` mas
@@ -91,6 +93,7 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
       setScrapeError(null);
       setScrapeLogs([]);
       setB3CodeMismatch(null);
+      setShowJsonPreview(false);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asset?.code]);
@@ -243,12 +246,9 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
     setScrapingStatus('error');
   }, [editableFields.fiduciaryAgentUrls, editableFields.b3Code, asset, onPaymentsFetched]);
 
-  if (!isOpen || !asset) {
-    return null;
-  }
-
-  const handleSave = () => {
-    const updatedAsset: Asset = {
+  const jsonPreviewAsset = useMemo<Asset | null>(() => {
+    if (!asset) return null;
+    return {
       ...asset,
       b3Code: editableFields.b3Code || undefined,
       fiduciaryAgentUrls:
@@ -265,7 +265,19 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
           ? asset.paymentScheduleUpdatedAt || new Date().toISOString()
           : undefined,
     };
-    onSave(updatedAsset);
+  }, [asset, editableFields, paymentSchedule]);
+
+  const jsonPreview = useMemo(
+    () => (jsonPreviewAsset ? JSON.stringify(jsonPreviewAsset, null, 2) : ''),
+    [jsonPreviewAsset],
+  );
+
+  if (!isOpen || !asset || !jsonPreviewAsset) {
+    return null;
+  }
+
+  const handleSave = () => {
+    onSave(jsonPreviewAsset);
   };
 
   const handleCancel = () => {
@@ -316,10 +328,24 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
           <ChangedFieldsPanel asset={asset} />
 
           {/* Read-only reference fields */}
-          <fieldset>
-            <legend className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
+          <section>
+            <div className="mb-3 flex items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
               Informações do Ativo (somente leitura)
-            </legend>
+            </h3>
+              <button
+                type="button"
+                onClick={() => setShowJsonPreview((value) => !value)}
+                className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                aria-label={showJsonPreview ? 'Ocultar JSON do ativo' : 'Ver JSON do ativo'}
+                title={showJsonPreview ? 'Ocultar JSON' : 'Ver JSON'}
+                aria-expanded={showJsonPreview}
+              >
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </button>
+            </div>
             <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm bg-gray-50 dark:bg-gray-900/50 rounded-md p-3">
               <ReadOnlyField label="Nome" value={displayValue(asset.nickName)} />
               <ReadOnlyField label="Produto" value={displayValue(asset.product)} />
@@ -328,7 +354,26 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
               <ReadOnlyField label="Vencimento" value={displayValue(asset.maturityDate)} />
               <ReadOnlyField label="Código" value={displayValue(asset.code)} />
             </dl>
-          </fieldset>
+            {showJsonPreview && (
+              <div className="mt-3 rounded-md bg-gray-900">
+                <div className="flex items-center justify-between border-b border-gray-700 px-3 py-2">
+                  <span className="text-xs font-semibold text-gray-300">JSON</span>
+                  <button
+                    type="button"
+                    onClick={() => navigator.clipboard.writeText(jsonPreview)}
+                    className="inline-flex min-h-8 items-center rounded-md px-2 py-1 text-xs font-medium text-gray-300 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    Copiar
+                  </button>
+                </div>
+                <div className="max-h-80 max-w-full overflow-auto p-3">
+                  <pre className="text-xs leading-relaxed text-green-400 font-mono whitespace-pre-wrap break-all">
+                    {jsonPreview}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </section>
 
           {/* Editable fields */}
           <fieldset className="space-y-4">
@@ -349,6 +394,12 @@ export function EditModal({ asset, isOpen, onSave, onClose, onPaymentsFetched, o
                 placeholder="Ex: CPTS11"
                 className={`block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-gray-500 ${isMobile ? 'text-base' : ''}`}
               />
+              {isLocalhost() && (
+                <B3CodeFinderPanel
+                  asset={asset}
+                  onAccept={(code) => setEditableFields((prev) => ({ ...prev, b3Code: code }))}
+                />
+              )}
             </div>
 
             {/* fiduciaryAgentUrls */}

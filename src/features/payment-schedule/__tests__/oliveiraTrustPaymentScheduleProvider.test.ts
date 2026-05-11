@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+﻿import { describe, expect, it } from 'vitest';
 import {
   buildOliveiraTrustHistoricoApiUrl,
   buildOliveiraTrustSearchApiUrl,
@@ -6,10 +6,10 @@ import {
   parseOliveiraTrustHistoricoJson,
   parseOliveiraTrustNumber,
   oliveiraTrustPaymentScheduleProvider,
-} from '../../../services/paymentSchedule/providers/oliveiraTrustPaymentScheduleProvider';
+} from '../providers/oliveiraTrustPaymentScheduleProvider';
 
 describe('buildOliveiraTrustHistoricoApiUrl', () => {
-  it('monta a URL da API de histórico a partir do tit', () => {
+  it('monta a URL da API de histÃ³rico a partir do tit', () => {
     expect(buildOliveiraTrustHistoricoApiUrl(56891, 2, 50)).toBe(
       'https://services-ft.oliveiratrust.com.br/app/v1/titulos/historico_pu/56891?page=2&limit=50',
     );
@@ -17,7 +17,7 @@ describe('buildOliveiraTrustHistoricoApiUrl', () => {
 });
 
 describe('buildOliveiraTrustSearchApiUrl', () => {
-  it('monta a URL de busca por código IF e data', () => {
+  it('monta a URL de busca por cÃ³digo IF e data', () => {
     expect(buildOliveiraTrustSearchApiUrl('24E2531061', '2026-05-10')).toBe(
       'https://services-ft.oliveiratrust.com.br/app/v1/titulos/historico_pu?page=1&limit=20&data=2026-05-10&busca=24E2531061',
     );
@@ -35,7 +35,7 @@ describe('formatOliveiraTrustDate', () => {
 });
 
 describe('parseOliveiraTrustNumber', () => {
-  it('converte número brasileiro em number', () => {
+  it('converte nÃºmero brasileiro em number', () => {
     expect(parseOliveiraTrustNumber('1.097,68849693')).toBe(1097.68849693);
   });
 
@@ -66,7 +66,7 @@ describe('parseOliveiraTrustHistoricoJson', () => {
     ]);
   });
 
-  it('retorna [] para JSON inválido ou payload vazio', () => {
+  it('retorna [] para JSON invÃ¡lido ou payload vazio', () => {
     expect(parseOliveiraTrustHistoricoJson('not json')).toEqual([]);
     expect(parseOliveiraTrustHistoricoJson('{}')).toEqual([]);
   });
@@ -92,3 +92,4 @@ describe('oliveiraTrustPaymentScheduleProvider.canHandle', () => {
     ).toBe(false);
   });
 });
+

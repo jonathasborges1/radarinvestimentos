@@ -12,6 +12,6 @@ export {
   fetchPaymentScheduleViaProvider,
   findProviderFor,
   isPaymentScheduleAvailable,
-} from './paymentScheduleService';
+} from './service';
 
 export { paymentScheduleProviders } from './providers';

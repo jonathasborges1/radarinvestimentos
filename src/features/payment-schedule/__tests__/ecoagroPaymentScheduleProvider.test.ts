@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import {
   ecoagroPaymentScheduleProvider,
   parseEcoagroHistoricoPuHtml,
   parseEcoagroTotal,
   resolveEcoagroHistoricoUrl,
   buildEcoagroHistoricoUrl,
-} from '../../../services/paymentSchedule/providers/ecoagroPaymentScheduleProvider';
+} from '../providers/ecoagroPaymentScheduleProvider';
 
 const HISTORICO_HTML_BASE = `
 <!doctype html>
@@ -18,11 +18,11 @@ const HISTORICO_HTML_BASE = `
       <th colspan="3">PAGAMENTOS</th>
     </tr>
     <tr>
-      <th>UNITÁRIO</th>
+      <th>UNITÃRIO</th>
       <th>TAXA</th>
       <th>TOTAL</th>
       <th>JUROS</th>
-      <th>AMORTIZAÇÃO</th>
+      <th>AMORTIZAÃ‡ÃƒO</th>
       <th>TOTAL</th>
     </tr>
   </thead>
@@ -72,13 +72,13 @@ describe('parseEcoagroTotal', () => {
     expect(parseEcoagroTotal('0,00000000')).toBe(0);
   });
 
-  it('retorna NaN para entrada inválida', () => {
+  it('retorna NaN para entrada invÃ¡lida', () => {
     expect(Number.isNaN(parseEcoagroTotal('abc'))).toBe(true);
   });
 });
 
 describe('parseEcoagroHistoricoPuHtml', () => {
-  it('extrai apenas linhas com TOTAL (PAGAMENTOS) > 0, preservando data e precisão', () => {
+  it('extrai apenas linhas com TOTAL (PAGAMENTOS) > 0, preservando data e precisÃ£o', () => {
     const items = parseEcoagroHistoricoPuHtml(HISTORICO_HTML_BASE);
     expect(items).toEqual([
       { date: '15.04.2026', total: '12,41774000' },
@@ -86,13 +86,13 @@ describe('parseEcoagroHistoricoPuHtml', () => {
     ]);
   });
 
-  it('retorna array vazio se a tabela não tiver coluna TOTAL', () => {
+  it('retorna array vazio se a tabela nÃ£o tiver coluna TOTAL', () => {
     const html = `<table><thead><tr><th>DATA</th><th>VALOR</th></tr></thead>
       <tbody><tr><td>15.04.2026</td><td>10,00</td></tr></tbody></table>`;
     expect(parseEcoagroHistoricoPuHtml(html)).toEqual([]);
   });
 
-  it('cai no fallback "último TOTAL" quando não há agrupamento PAGAMENTOS', () => {
+  it('cai no fallback "Ãºltimo TOTAL" quando nÃ£o hÃ¡ agrupamento PAGAMENTOS', () => {
     const html = `
       <table>
         <thead><tr><th>DATA</th><th>JUROS</th><th>TOTAL</th></tr></thead>
@@ -108,7 +108,7 @@ describe('parseEcoagroHistoricoPuHtml', () => {
 });
 
 describe('resolveEcoagroHistoricoUrl', () => {
-  it('aceita URL direta de histórico-pu', () => {
+  it('aceita URL direta de histÃ³rico-pu', () => {
     const url = resolveEcoagroHistoricoUrl({
       fiduciaryAgentUrl: 'https://ecoagro.agr.br/historico-pu/662/CRA025008SY',
       asset: { code: 'CRA025008SY', nickName: 'Teste' },
@@ -124,7 +124,7 @@ describe('resolveEcoagroHistoricoUrl', () => {
     expect(url).toBe('https://ecoagro.agr.br/historico-pu/662/CRA025008SY');
   });
 
-  it('cai em asset.code quando b3Code não está presente', () => {
+  it('cai em asset.code quando b3Code nÃ£o estÃ¡ presente', () => {
     const url = resolveEcoagroHistoricoUrl({
       fiduciaryAgentUrl: 'https://ecoagro.agr.br/emissoes-integra/662',
       asset: { code: 'CRA025008SY', nickName: 'Teste' },
@@ -132,7 +132,7 @@ describe('resolveEcoagroHistoricoUrl', () => {
     expect(url).toBe('https://ecoagro.agr.br/historico-pu/662/CRA025008SY');
   });
 
-  it('retorna null para URL não-Ecoagro', () => {
+  it('retorna null para URL nÃ£o-Ecoagro', () => {
     const url = resolveEcoagroHistoricoUrl({
       fiduciaryAgentUrl: 'https://app.opea.com.br/pt/emissoes/123',
       asset: { code: 'X', nickName: 'Teste' },
@@ -150,7 +150,7 @@ describe('resolveEcoagroHistoricoUrl', () => {
 });
 
 describe('buildEcoagroHistoricoUrl', () => {
-  it('formata segundo o padrão esperado', () => {
+  it('formata segundo o padrÃ£o esperado', () => {
     expect(buildEcoagroHistoricoUrl('662', 'CRA025008SY')).toBe(
       'https://ecoagro.agr.br/historico-pu/662/CRA025008SY',
     );
@@ -190,3 +190,4 @@ describe('ecoagroPaymentScheduleProvider.canHandle', () => {
     ).toBe(false);
   });
 });
+

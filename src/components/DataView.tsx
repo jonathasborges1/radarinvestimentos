@@ -211,6 +211,7 @@ export function DataView() {
         onSort={toggleSort}
         onEdit={handleEdit}
         onViewJson={handleViewJson}
+        selectedAsset={editingAsset ?? viewingJsonAsset}
         isMobile={isMobile}
         orderedVisible={orderedVisible}
         onReorder={reorder}

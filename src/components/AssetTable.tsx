@@ -114,6 +114,7 @@ interface AssetTableProps {
   onSort: (column: SortableColumn) => void;
   onEdit: (asset: Asset) => void;
   onViewJson: (asset: Asset) => void;
+  selectedAsset: Asset | null;
   isMobile: boolean;
   orderedVisible: ColumnKey[];
   onReorder: (newOrder: ColumnKey[]) => void;
@@ -484,11 +485,13 @@ function MobileRow({
   onEdit,
   orderedVisible,
   agents,
+  isSelected,
 }: {
   asset: Asset;
   onEdit: (a: Asset) => void;
   orderedVisible: ColumnKey[];
   agents: AgentEntry[];
+  isSelected: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -499,7 +502,11 @@ function MobileRow({
   return (
     <>
       <tr
-        className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer"
+        className={`border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-colors ${
+          isSelected
+            ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-inset ring-blue-200 dark:ring-blue-800'
+            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+        }`}
         onClick={() => setExpanded(!expanded)}
       >
         <td className="px-3 py-3 text-sm text-gray-900 dark:text-gray-100 font-medium max-w-35 truncate">
@@ -551,18 +558,30 @@ function DesktopRow({
   onViewJson,
   orderedVisible,
   agents,
+  isSelected,
 }: {
   asset: Asset;
   onEdit: (a: Asset) => void;
   onViewJson: (a: Asset) => void;
   orderedVisible: ColumnKey[];
   agents: AgentEntry[];
+  isSelected: boolean;
 }) {
   return (
-    <tr className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+    <tr
+      className={`border-b border-gray-200 dark:border-gray-700 transition-colors ${
+        isSelected
+          ? 'bg-blue-50 dark:bg-blue-900/30 ring-1 ring-inset ring-blue-200 dark:ring-blue-800'
+          : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+      }`}
+    >
       {orderedVisible.map((key) => renderDesktopCell(key, asset, onEdit, onViewJson, agents))}
     </tr>
   );
+}
+
+function isSameAsset(a: Asset, b: Asset | null): boolean {
+  return Boolean(b && a.code === b.code && a.nickName === b.nickName);
 }
 
 /* ------------------------------------------------------------------ */
@@ -575,6 +594,7 @@ export function AssetTable({
   onSort,
   onEdit,
   onViewJson,
+  selectedAsset,
   isMobile,
   orderedVisible,
   onReorder,
@@ -630,6 +650,7 @@ export function AssetTable({
                 onEdit={onEdit}
                 orderedVisible={orderedVisible}
                 agents={agents}
+                isSelected={isSameAsset(asset, selectedAsset)}
               />
             ))}
           </tbody>
@@ -686,6 +707,7 @@ export function AssetTable({
               onViewJson={onViewJson}
               orderedVisible={displayOrder}
               agents={agents}
+              isSelected={isSameAsset(asset, selectedAsset)}
             />
           ))}
         </tbody>
